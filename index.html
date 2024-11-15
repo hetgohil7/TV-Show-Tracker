@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Show Tracker</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .light-theme {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .dark-theme {
+            background-color: #1a1a1a;
+            color: #f4f4f4;
+        }
+
+        header {
+            background-color: #4a0e4e;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #7c4dff;
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        nav a, .theme-toggle {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, .theme-toggle:hover {
+            background-color: #5e35b1;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .show-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .show-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .show-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dark-theme .show-card {
+            background-color: #2c2c2c;
+        }
+
+        .show-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .show-info {
+            padding: 1rem;
+        }
+
+        .show-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #4a0e4e;
+        }
+
+        .dark-theme .show-title {
+            color: #bb86fc;
+        }
+
+        .show-genre {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .dark-theme .show-genre {
+            color: #b0b0b0;
+        }
+
+        .show-synopsis {
+            font-size: 0.9rem;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .dark-theme .show-synopsis {
+            color: #e0e0e0;
+        }
+
+        .watchlist-btn {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            background-color: #7c4dff;
+            color: #fff;
+            border: none;
+            border-radius: 0 0 10px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .watchlist-btn:hover {
+            background-color: #5e35b1;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        footer {
+            background-color: #4a0e4e;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+
+        @media (max-width: 600px) {
+            .show-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <header>
+        <h1>TV Show Tracker</h1>
+    </header>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#search">Search</a>
+        <a href="#watchlist">Watchlist</a>
+        <button id="theme-toggle" class="theme-toggle">🌙</button>
+    </nav>
+
+    <main>
+        <section id="home">
+            <h2>Popular Shows</h2>
+            <div id="popular-shows" class="show-grid"></div>
+        </section>
+
+        <section id="search">
+            <h2>Search Shows</h2>
+            <input type="text" id="search-input" placeholder="Search for TV shows...">
+            <div id="search-results" class="show-grid"></div>
+        </section>
+
+        <section id="watchlist">
+            <h2>Your Watchlist</h2>
+            <div id="watchlist-shows" class="show-grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 TV Show Tracker</p>
+    </footer>
+
+    <script>
+        const shows = [
+            { id: 1, title: "Stranger Things", genre: "Sci-Fi", synopsis: "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back.", image: "https://m.media-amazon.com/images/M/MV5BMDZkYmVhNjMtNWU4MC00MDQxLWE3MjYtZGMzZWI1ZjhlOWJmXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg" },
+            { id: 2, title: "The Crown", genre: "Drama", synopsis: "Follows the political rivalries and romance of Queen Elizabeth II's reign and the events that shaped the second half of the twentieth century.", image: "https://m.media-amazon.com/images/M/MV5BZmY0MzBlNjctNTRmNy00Njk3LWFjMzctMWQwZDAwMGJmY2MyXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_.jpg" },
+            { id: 3, title: "Breaking Bad", genre: "Crime", synopsis: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine in order to secure his family's future.", image: "https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_.jpg" },
+            { id: 4, title: "The Mandalorian", genre: "Sci-Fi", synopsis: "The travels of a lone bounty hunter in the outer reaches of the galaxy, far from the authority of the New Republic.", image: "https://m.media-amazon.com/images/M/MV5BN2FiOWU4YzYtMzZiOS00MzcyLTlkOGEtOTgwZmEwMzAxMzA3XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg" },
+            { id: 5, title: "The Witcher", genre: "Fantasy", synopsis: "Geralt of Rivia, a solitary monster hunter, struggles to find his place in a world where people often prove more wicked than beasts.", image: "https://m.media-amazon.com/images/M/MV5BN2FiOWU4YzYtMzZiOS00MzcyLTlkOGEtOTgwZmEwMzAxMzA3XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg" },
+            { id: 6, title: "The Office", genre: "Comedy", synopsis: "A mockumentary on a group of typical office workers, where the workday consists of ego clashes, inappropriate behavior, and tedium.", image: "https://m.media-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg" },
+            { id: 7, title: "Game of Thrones", genre: "Fantasy", synopsis: "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for millennia.", image: "https://m.media-amazon.com/images/M/MV5BYTRiNDQwYzAtMzVlZS00NTI5LWJjYjUtMzkwNTUzMWMxZTllXkEyXkFqcGdeQXVyNDIzMzcwNjc@._V1_.jpg" },
+            { id: 8, title: "Friends", genre: "Comedy", synopsis: "Follows the personal and professional lives of six twenty to thirty-something-year-old friends living in Manhattan.", image: "https://m.media-amazon.com/images/M/MV5BNDVkYjU0MzctMWRmZi00NTkxLTgwZWEtOWVhYjZlYjllYmU4XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_.jpg" },
+        ];
+
+        let watchlist = [];
+
+        function createShowCard(show) {
+            const card = document.createElement('div');
+            card.className = 'show-card';
+            card.innerHTML = `
+                <img src="${show.image}" alt="${show.title}">
+                <div class="show-info">
+                    <h3 class="show-title">${show.title}</h3>
+                    <p class="show-genre">${show.genre}</p>
+                    <p class="show-synopsis">${show.synopsis}</p>
+                </div>
+                <button class="watchlist-btn" data-id="${show.id}">${watchlist.includes(show.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}</button>
+            `;
+            return card;
+        }
+
+        function displayShows(showsToDisplay, container) {
+            container.innerHTML = '';
+            showsToDisplay.forEach(show => {
+                container.appendChild(createShowCard(show));
+            });
+        }
+
+        function toggleWatchlist(showId) {
+            const index = watchlist.indexOf(showId);
+            if (index > -1) {
+                watchlist.splice(index, 1);
+            } else {
+                watchlist.push(showId);
+            }
+            updateWatchlist();
+        }
+
+        function updateWatchlist() {
+            const watchlistShows = shows.filter(show => watchlist.includes(show.id));
+            displayShows(watchlistShows, document.getElementById('watchlist-shows'));
+            document.querySelectorAll('.watchlist-btn').forEach(btn => {
+                const showId = parseInt(btn.getAttribute('data-id'));
+                btn.textContent = watchlist.includes(showId) ? 'Remove from Watchlist' : 'Add to Watchlist';
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('watchlist-btn')) {
+                const showId = parseInt(e.target.getAttribute('data-id'));
+                toggleWatchlist(showId);
+            }
+        });
+
+        document.getElementById('search-input').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const filteredShows = shows.filter(show => 
+                show.title.toLowerCase().includes(query) || 
+                show.genre.toLowerCase().includes(query)
+            );
+            displayShows(filteredShows, document.getElementById('search-results'));
+        });
+
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-theme');
+            this.textContent = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+        });
+
+        // Initial display
+        displayShows(shows, document.getElementById('popular-shows'));
+        updateWatchlist();
+    </script>
+</body>
+</html>
