@@ -36,3 +36,8 @@ TV Show Tracker is a web-based application that helps users manage and follow th
    - Right-click on `index.html` and select "Open with Live Server".
 
 ### Project Structure
+/tv-show-tracker
+│
+├── index.html # Main HTML file
+├── styles.css # CSS styles for the application
+└── script.js # JavaScript logic for functionality
